@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SaaSMarket — Marketplace de Software</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .gradient-text {
+      background: linear-gradient(to right, #4f46e5, #7c3aed);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  </style>
+</head>
+
+<body class="bg-[#f6f7f9] text-slate-900 antialiased">
+
+<!-- NAVBAR -->
+<nav class="bg-white/70 backdrop-blur border-b border-slate-200 sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+    <a href="index.html" class="font-black tracking-tight text-xl">
+      SaaS<span class="text-indigo-600">Market</span>
+    </a>
+
+    <div class="flex items-center gap-10 text-sm font-medium text-slate-600">
+      <a href="marketplace.html" class="hover:text-slate-900 transition">Marketplace</a>
+      <a href="#como-funciona" class="hover:text-slate-900 transition">Como Funciona</a>
+      <a href="#vender" class="hover:text-slate-900 transition">Vender SaaS</a>
+      <button onclick="irParaDashboard()" class="bg-slate-900 text-white px-5 py-2 rounded-lg hover:bg-slate-800 transition">
+        Acessar
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="max-w-7xl mx-auto px-6 pt-32 pb-40 grid md:grid-cols-2 gap-24 items-center">
+
+  <div>
+    <span class="inline-block mb-8 text-xs font-semibold uppercase tracking-[0.25em] text-indigo-600">
+      Marketplace profissional de SaaS
+    </span>
+
+    <h1 class="text-[3.5rem] font-black leading-[1.05] mb-8">
+      Softwares prontos<br/>
+      para <span class="gradient-text">negócios reais</span>.
+    </h1>
+
+    <p class="text-lg text-slate-600 max-w-xl mb-12">
+      Descubra soluções desenvolvidas para automatizar vendas,
+      atendimento e operações — sem promessas vazias.
+    </p>
+
+    <div class="flex items-center gap-6">
+      <a href="marketplace.html">
+        <button class="bg-indigo-600 text-white px-9 py-4 rounded-2xl font-bold shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition">
+          Explorar marketplace
+        </button>
+      </a>
+      <a href="#vender">
+        <button class="text-slate-700 font-semibold hover:text-slate-900 transition">
+          Vender meu SaaS →
+        </button>
+      </a>
+    </div>
+
+    <div class="mt-10 flex items-center gap-8 text-sm text-slate-500">
+      <span>✔ Pagamento seguro</span>
+      <span>✔ Acesso imediato</span>
+      <span>✔ Uso profissional</span>
+    </div>
+  </div>
+
+  <!-- FEATURED PRODUCT -->
+  <div class="relative">
+    <div class="absolute inset-0 bg-gradient-to-tr from-indigo-200/40 to-purple-200/40 rounded-[3rem] blur-3xl"></div>
+
+    <div id="produto-destaque" class="relative bg-white rounded-[2.5rem] shadow-2xl shadow-slate-300/40 p-10">
+      <!-- Será preenchido via JavaScript -->
+      <div class="animate-pulse">
+        <div class="h-4 bg-slate-200 rounded w-1/3 mb-6"></div>
+        <div class="h-8 bg-slate-200 rounded w-2/3 mb-4"></div>
+        <div class="h-20 bg-slate-200 rounded mb-10"></div>
+        <div class="h-10 bg-slate-200 rounded"></div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- COMO FUNCIONA -->
+<section id="como-funciona" class="bg-white py-32">
+  <div class="max-w-7xl mx-auto px-6">
+    
+    <div class="text-center mb-20">
+      <span class="text-xs font-semibold uppercase tracking-widest text-indigo-600 mb-4 block">
+        Como funciona
+      </span>
+      <h2 class="text-4xl font-black mb-6">
+        Simples para compradores.<br/>Lucrativo para vendedores.
+      </h2>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-12">
+      
+      <!-- PASSO 1 -->
+      <div class="text-center">
+        <div class="w-16 h-16 bg-indigo-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+          <span class="text-2xl font-black text-indigo-600">1</span>
+        </div>
+        <h3 class="text-xl font-bold mb-4">Navegue</h3>
+        <p class="text-slate-600">
+          Explore SaaS verificados com curadoria técnica. Apenas produtos funcionais.
+        </p>
+      </div>
+
+      <!-- PASSO 2 -->
+      <div class="text-center">
+        <div class="w-16 h-16 bg-indigo-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+          <span class="text-2xl font-black text-indigo-600">2</span>
+        </div>
+        <h3 class="text-xl font-bold mb-4">Compre</h3>
+        <p class="text-slate-600">
+          Checkout seguro via Stripe. Receba acesso instantâneo após pagamento.
+        </p>
+      </div>
+
+      <!-- PASSO 3 -->
+      <div class="text-center">
+        <div class="w-16 h-16 bg-indigo-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+          <span class="text-2xl font-black text-indigo-600">3</span>
+        </div>
+        <h3 class="text-xl font-bold mb-4">Use</h3>
+        <p class="text-slate-600">
+          Acesso imediato ao software. Suporte direto com o criador.
+        </p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- VENDER -->
+<section id="vender" class="max-w-7xl mx-auto px-6 py-32">
+  
+  <div class="bg-gradient-to-br from-slate-900 to-slate-800 rounded-[3rem] p-16 text-white">
+    
+    <div class="max-w-3xl">
+      <span class="text-xs font-semibold uppercase tracking-widest text-indigo-400 mb-4 block">
+        Para criadores
+      </span>
+      
+      <h2 class="text-5xl font-black mb-8">
+        Venda seu SaaS.<br/>
+        Receba automaticamente.
+      </h2>
+
+      <p class="text-xl text-slate-300 mb-12">
+        Conecte sua conta Stripe, liste seus produtos e comece a vender.
+        Pagamentos direto na sua conta, sem intermediários.
+      </p>
+
+      <div class="grid md:grid-cols-3 gap-8 mb-12">
+        <div>
+          <div class="text-3xl font-black text-indigo-400 mb-2">90%</div>
+          <div class="text-sm text-slate-400">Você fica com 90% da venda</div>
+        </div>
+        <div>
+          <div class="text-3xl font-black text-indigo-400 mb-2">24h</div>
+          <div class="text-sm text-slate-400">Pagamento em até 24h</div>
+        </div>
+        <div>
+          <div class="text-3xl font-black text-indigo-400 mb-2">0</div>
+          <div class="text-sm text-slate-400">Custo para listar</div>
+        </div>
+      </div>
+
+      <button onclick="irParaDashboard()" class="bg-indigo-600 text-white px-9 py-4 rounded-2xl font-bold shadow-lg hover:bg-indigo-700 transition">
+        Começar a vender
+      </button>
+    </div>
+
+  </div>
+
+</section>
+
+<!-- PRODUTOS EM DESTAQUE -->
+<section class="max-w-7xl mx-auto px-6 pb-32">
+  
+  <div class="flex items-end justify-between mb-14">
+    <h2 class="text-3xl font-extrabold">
+      Produtos em destaque
+    </h2>
+    <a href="marketplace.html" class="text-sm text-indigo-600 font-semibold hover:underline">
+      Ver todos →
+    </a>
+  </div>
+
+  <div id="produtos-destaque" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <!-- Será preenchido via JavaScript -->
+    <div class="animate-pulse bg-white rounded-2xl p-7 h-64"></div>
+    <div class="animate-pulse bg-white rounded-2xl p-7 h-64"></div>
+    <div class="animate-pulse bg-white rounded-2xl p-7 h-64"></div>
+  </div>
+
+</section>
+
+<!-- FOOTER -->
+<footer class="bg-white border-t border-slate-200">
+  <div class="max-w-7xl mx-auto px-6 py-12">
+    
+    <div class="grid md:grid-cols-4 gap-12 mb-12">
+      
+      <div>
+        <div class="font-black tracking-tight text-xl mb-4">
+          SaaS<span class="text-indigo-600">Market</span>
+        </div>
+        <p class="text-sm text-slate-500">
+          Marketplace profissional de software como serviço.
+        </p>
+      </div>
+
+      <div>
+        <h4 class="font-bold mb-4">Produtos</h4>
+        <ul class="space-y-2 text-sm text-slate-600">
+          <li><a href="marketplace.html" class="hover:text-slate-900">Marketplace</a></li>
+          <li><a href="marketplace.html?categoria=vendas" class="hover:text-slate-900">Vendas</a></li>
+          <li><a href="marketplace.html?categoria=marketing" class="hover:text-slate-900">Marketing</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="font-bold mb-4">Empresa</h4>
+        <ul class="space-y-2 text-sm text-slate-600">
+          <li><a href="#" class="hover:text-slate-900">Sobre</a></li>
+          <li><a href="#" class="hover:text-slate-900">Termos de Uso</a></li>
+          <li><a href="#" class="hover:text-slate-900">Privacidade</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="font-bold mb-4">Suporte</h4>
+        <ul class="space-y-2 text-sm text-slate-600">
+          <li><a href="#" class="hover:text-slate-900">Central de Ajuda</a></li>
+          <li><a href="#" class="hover:text-slate-900">Contato</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="border-t border-slate-200 pt-8 flex justify-between text-sm text-slate-500">
+      <span>© 2026 SaaSMarket</span>
+      <span>Desenvolvido com 💜 para criadores de SaaS</span>
+    </div>
+
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://js.stripe.com/v3/"></script>
+<script src="config.js"></script>
+
+<script>
+// Carregar produto em destaque
+async function carregarProdutoDestaque() {
+  try {
+    const { data, error } = await supabase
+      .from('produtos')
+      .select('*')
+      .eq('ativo', true)
+      .eq('verificado', true)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single();
+
+    if (error) throw error;
+
+    if (data) {
+      document.getElementById('produto-destaque').innerHTML = `
+        <p class="text-xs font-semibold uppercase tracking-widest text-slate-500 mb-6">
+          Destaque da semana
+        </p>
+        <h3 class="text-3xl font-extrabold mb-4">
+          ${data.nome}
+        </h3>
+        <p class="text-slate-600 mb-10">
+          ${data.descricao}
+        </p>
+        <div class="flex items-center justify-between">
+          <span class="text-2xl font-black">
+            R$ ${data.preco} <span class="text-sm font-semibold text-slate-500">/ mês</span>
+          </span>
+          <a href="produto.html?id=${data.id}">
+            <button class="bg-slate-900 text-white px-6 py-3 rounded-xl text-sm font-semibold hover:bg-slate-800 transition">
+              Ver produto
+            </button>
+          </a>
+        </div>
+      `;
+    }
+  } catch (error) {
+    console.error('Erro ao carregar produto:', error);
+  }
+}
+
+// Carregar produtos em destaque
+async function carregarProdutosDestaque() {
+  try {
+    const { data, error } = await supabase
+      .from('produtos')
+      .select('*')
+      .eq('ativo', true)
+      .order('created_at', { ascending: false })
+      .limit(3);
+
+    if (error) throw error;
+
+    if (data && data.length > 0) {
+      document.getElementById('produtos-destaque').innerHTML = data.map(produto => `
+        <div class="bg-white rounded-2xl p-7 shadow-md shadow-slate-200/60 hover:shadow-xl transition cursor-pointer" onclick="window.location.href='produto.html?id=${produto.id}'">
+          <div class="flex justify-between items-center mb-6">
+            <h3 class="font-bold text-lg">${produto.nome}</h3>
+            ${produto.verificado ? '<span class="text-xs font-semibold text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full">Verificado</span>' : ''}
+          </div>
+          <p class="text-slate-600 text-sm mb-10">
+            ${produto.descricao}
+          </p>
+          <div class="flex items-center justify-between border-t border-slate-100 pt-4">
+            <span class="font-bold">R$ ${produto.preco} / mês</span>
+            <span class="text-indigo-600 font-semibold">Ver mais →</span>
+          </div>
+        </div>
+      `).join('');
+    }
+  } catch (error) {
+    console.error('Erro ao carregar produtos:', error);
+  }
+}
+
+// Ir para dashboard
+function irParaDashboard() {
+  window.location.href = 'dashboard.html';
+}
+
+// Carregar ao iniciar
+window.onload = () => {
+  carregarProdutoDestaque();
+  carregarProdutosDestaque();
+};
+</script>
+
+</body>
+</html>

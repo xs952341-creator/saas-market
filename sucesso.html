@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Compra Realizada — SaaSMarket</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    @keyframes checkmark {
+      0% { transform: scale(0); opacity: 0; }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .checkmark {
+      animation: checkmark 0.5s ease-in-out;
+    }
+  </style>
+</head>
+
+<body class="bg-[#f6f7f9] text-slate-900 antialiased">
+
+<!-- NAVBAR -->
+<nav class="bg-white border-b border-slate-200">
+  <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+    <a href="index.html" class="font-black tracking-tight text-xl">
+      SaaS<span class="text-indigo-600">Market</span>
+    </a>
+  </div>
+</nav>
+
+<!-- LOADING -->
+<div id="loading" class="min-h-screen flex items-center justify-center">
+  <div class="text-center">
+    <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+    <p class="text-slate-600">Confirmando seu pagamento...</p>
+  </div>
+</div>
+
+<!-- SUCESSO -->
+<div id="sucesso" class="hidden min-h-screen flex items-center justify-center px-6">
+  
+  <div class="max-w-2xl w-full text-center">
+    
+    <!-- CHECKMARK ANIMADO -->
+    <div class="checkmark w-24 h-24 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-8">
+      <svg class="w-12 h-12 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+      </svg>
+    </div>
+
+    <h1 class="text-5xl font-black mb-6">
+      Compra realizada! 🎉
+    </h1>
+
+    <p class="text-xl text-slate-600 mb-12">
+      Seu pagamento foi confirmado e você já tem acesso ao produto.
+    </p>
+
+    <!-- DETALHES DA COMPRA -->
+    <div class="bg-white rounded-2xl shadow-xl p-10 mb-8">
+      
+      <div class="grid md:grid-cols-2 gap-8 text-left">
+        
+        <div>
+          <p class="text-sm text-slate-500 mb-2">Produto</p>
+          <p id="produto-nome" class="font-bold text-lg">-</p>
+        </div>
+
+        <div>
+          <p class="text-sm text-slate-500 mb-2">Valor</p>
+          <p id="produto-valor" class="font-bold text-lg">-</p>
+        </div>
+
+        <div>
+          <p class="text-sm text-slate-500 mb-2">Email</p>
+          <p id="comprador-email" class="font-bold text-lg">-</p>
+        </div>
+
+        <div>
+          <p class="text-sm text-slate-500 mb-2">ID da Assinatura</p>
+          <p id="subscription-id" class="font-mono text-sm">-</p>
+        </div>
+
+      </div>
+
+      <!-- INFO ADICIONAL -->
+      <div class="border-t border-slate-100 mt-8 pt-8 text-sm text-slate-600 text-left space-y-3">
+        <div class="flex items-center gap-3">
+          <span class="text-emerald-600">✓</span>
+          <span>Você receberá um email de confirmação com os próximos passos</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="text-emerald-600">✓</span>
+          <span>O criador do produto entrará em contato para configurar seu acesso</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="text-emerald-600">✓</span>
+          <span>Você pode cancelar a assinatura a qualquer momento</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- BOTÕES -->
+    <div class="flex gap-4 justify-center">
+      <a href="marketplace.html">
+        <button class="bg-indigo-600 text-white px-8 py-4 rounded-xl font-bold hover:bg-indigo-700 transition">
+          Explorar mais produtos
+        </button>
+      </a>
+      <a href="index.html">
+        <button class="border border-slate-200 px-8 py-4 rounded-xl font-bold hover:bg-slate-50 transition">
+          Voltar para home
+        </button>
+      </a>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ERRO -->
+<div id="erro" class="hidden min-h-screen flex items-center justify-center px-6">
+  <div class="max-w-2xl w-full text-center">
+    <div class="text-6xl mb-6">⚠️</div>
+    <h1 class="text-4xl font-black mb-4">Algo deu errado</h1>
+    <p class="text-xl text-slate-600 mb-8">
+      Não conseguimos confirmar seu pagamento. Entre em contato com o suporte.
+    </p>
+    <a href="marketplace.html">
+      <button class="bg-indigo-600 text-white px-8 py-4 rounded-xl font-bold hover:bg-indigo-700 transition">
+        Voltar ao marketplace
+      </button>
+    </a>
+  </div>
+</div>
+
+<!-- SCRIPTS -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+
+<script>
+async function verificarPagamento() {
+  try {
+    const urlParams = new URLSearchParams(window.location.search);
+    const sessionId = urlParams.get('session_id');
+
+    if (!sessionId) {
+      mostrarErro();
+      return;
+    }
+
+    // Buscar informações da compra
+    const { data, error } = await supabase
+      .from('compras')
+      .select(`
+        *,
+        produtos (nome, preco)
+      `)
+      .eq('stripe_session_id', sessionId)
+      .single();
+
+    if (error) throw error;
+
+    if (data && data.status === 'completed') {
+      mostrarSucesso(data);
+    } else {
+      // Aguardar webhook processar
+      setTimeout(() => verificarPagamento(), 2000);
+    }
+
+  } catch (error) {
+    console.error('Erro ao verificar pagamento:', error);
+    mostrarErro();
+  }
+}
+
+function mostrarSucesso(compra) {
+  document.getElementById('loading').classList.add('hidden');
+  document.getElementById('sucesso').classList.remove('hidden');
+
+  document.getElementById('produto-nome').textContent = compra.produtos.nome;
+  document.getElementById('produto-valor').textContent = `R$ ${compra.valor} / mês`;
+  document.getElementById('comprador-email').textContent = compra.comprador_email;
+  document.getElementById('subscription-id').textContent = compra.stripe_subscription_id || 'N/A';
+}
+
+function mostrarErro() {
+  document.getElementById('loading').classList.add('hidden');
+  document.getElementById('erro').classList.remove('hidden');
+}
+
+window.onload = verificarPagamento;
+</script>
+
+</body>
+</html>

@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard — SaaSMarket</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+  </style>
+</head>
+
+<body class="bg-[#f6f7f9] text-slate-900 antialiased">
+
+<!-- NAVBAR -->
+<nav class="bg-white border-b border-slate-200">
+  <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+    <a href="index.html" class="font-black tracking-tight text-xl">
+      SaaS<span class="text-indigo-600">Market</span>
+    </a>
+
+    <div class="flex items-center gap-6">
+      <span id="user-email" class="text-sm text-slate-600"></span>
+      <button onclick="logout()" class="text-sm text-slate-600 hover:text-slate-900">
+        Sair
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- TELA DE LOGIN -->
+<div id="tela-login" class="min-h-screen flex items-center justify-center px-6">
+  
+  <div class="max-w-md w-full">
+    
+    <div class="text-center mb-12">
+      <h1 class="text-4xl font-black mb-4">
+        Bem-vindo ao <span class="text-indigo-600">SaaSMarket</span>
+      </h1>
+      <p class="text-slate-600">
+        Entre ou cadastre-se para começar a vender
+      </p>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-xl p-10">
+      
+      <div class="mb-8">
+        <label class="block text-sm font-semibold mb-2">Email</label>
+        <input 
+          type="email" 
+          id="email" 
+          placeholder="seu@email.com"
+          class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        />
+      </div>
+
+      <div class="mb-8">
+        <label class="block text-sm font-semibold mb-2">Senha</label>
+        <input 
+          type="password" 
+          id="senha" 
+          placeholder="••••••••"
+          class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        />
+      </div>
+
+      <button 
+        onclick="fazerLogin()"
+        id="btn-login"
+        class="w-full bg-indigo-600 text-white py-4 rounded-xl font-bold hover:bg-indigo-700 transition mb-4"
+      >
+        Entrar / Cadastrar
+      </button>
+
+      <p class="text-xs text-center text-slate-500">
+        Ao continuar, você concorda com os Termos de Uso
+      </p>
+
+    </div>
+
+    <div class="mt-8 text-center">
+      <a href="index.html" class="text-sm text-slate-600 hover:text-slate-900">
+        ← Voltar para home
+      </a>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard" class="hidden">
+
+  <!-- TABS -->
+  <div class="bg-white border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="flex gap-8">
+        <button 
+          onclick="mudarTab('produtos')" 
+          id="tab-produtos"
+          class="px-4 py-4 text-sm font-semibold border-b-2 border-indigo-600 text-indigo-600"
+        >
+          Meus Produtos
+        </button>
+        <button 
+          onclick="mudarTab('vendas')" 
+          id="tab-vendas"
+          class="px-4 py-4 text-sm font-semibold text-slate-600 hover:text-slate-900 border-b-2 border-transparent"
+        >
+          Vendas
+        </button>
+        <button 
+          onclick="mudarTab('conta')" 
+          id="tab-conta"
+          class="px-4 py-4 text-sm font-semibold text-slate-600 hover:text-slate-900 border-b-2 border-transparent"
+        >
+          Conta Stripe
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTEÚDO PRODUTOS -->
+  <div id="content-produtos" class="max-w-7xl mx-auto px-6 py-12">
+    
+    <div class="flex items-center justify-between mb-12">
+      <h2 class="text-3xl font-black">Meus Produtos</h2>
+      <button 
+        onclick="mostrarModalNovoProduto()"
+        class="bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-indigo-700 transition"
+      >
+        + Adicionar Produto
+      </button>
+    </div>
+
+    <!-- LISTA DE PRODUTOS -->
+    <div id="lista-produtos" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <!-- Será preenchido via JavaScript -->
+    </div>
+
+    <!-- MENSAGEM VAZIO -->
+    <div id="produtos-vazio" class="hidden text-center py-20">
+      <div class="text-6xl mb-4">📦</div>
+      <h3 class="text-2xl font-bold mb-2">Nenhum produto cadastrado</h3>
+      <p class="text-slate-600 mb-8">Adicione seu primeiro SaaS para começar a vender</p>
+      <button 
+        onclick="mostrarModalNovoProduto()"
+        class="bg-indigo-600 text-white px-8 py-4 rounded-xl font-bold hover:bg-indigo-700 transition"
+      >
+        + Adicionar Produto
+      </button>
+    </div>
+
+  </div>
+
+  <!-- CONTEÚDO VENDAS -->
+  <div id="content-vendas" class="hidden max-w-7xl mx-auto px-6 py-12">
+    
+    <h2 class="text-3xl font-black mb-12">Vendas</h2>
+
+    <!-- STATS -->
+    <div class="grid md:grid-cols-3 gap-8 mb-12">
+      
+      <div class="bg-white rounded-2xl p-8 shadow-sm">
+        <div class="text-sm text-slate-500 mb-2">Total de vendas</div>
+        <div id="total-vendas" class="text-4xl font-black">R$ 0</div>
+      </div>
+
+      <div class="bg-white rounded-2xl p-8 shadow-sm">
+        <div class="text-sm text-slate-500 mb-2">Assinaturas ativas</div>
+        <div id="assinaturas-ativas" class="text-4xl font-black">0</div>
+      </div>
+
+      <div class="bg-white rounded-2xl p-8 shadow-sm">
+        <div class="text-sm text-slate-500 mb-2">Este mês</div>
+        <div id="vendas-mes" class="text-4xl font-black">R$ 0</div>
+      </div>
+
+    </div>
+
+    <!-- TABELA DE VENDAS -->
+    <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+      <table class="w-full">
+        <thead class="bg-slate-50 border-b border-slate-200">
+          <tr>
+            <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase">Produto</th>
+            <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase">Cliente</th>
+            <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase">Valor</th>
+            <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase">Status</th>
+            <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase">Data</th>
+          </tr>
+        </thead>
+        <tbody id="tabela-vendas">
+          <!-- Será preenchido via JavaScript -->
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <!-- CONTEÚDO CONTA STRIPE -->
+  <div id="content-conta" class="hidden max-w-7xl mx-auto px-6 py-12">
+    
+    <h2 class="text-3xl font-black mb-8">Conta Stripe</h2>
+
+    <div id="stripe-conectado" class="hidden bg-white rounded-2xl p-10">
+      <div class="flex items-center gap-4 mb-6">
+        <div class="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center">
+          <span class="text-2xl">✓</span>
+        </div>
+        <div>
+          <h3 class="font-bold text-lg">Conta conectada</h3>
+          <p class="text-sm text-slate-600">Você está recebendo pagamentos automaticamente</p>
+        </div>
+      </div>
+      <div class="border-t border-slate-100 pt-6">
+        <p class="text-sm text-slate-600">
+          <strong>ID da conta:</strong> <span id="stripe-account-id" class="font-mono"></span>
+        </p>
+      </div>
+    </div>
+
+    <div id="stripe-desconectado" class="hidden bg-white rounded-2xl p-10">
+      <div class="text-center max-w-2xl mx-auto">
+        <div class="text-6xl mb-6">💳</div>
+        <h3 class="text-2xl font-bold mb-4">Conecte sua conta Stripe</h3>
+        <p class="text-slate-600 mb-8">
+          Para receber pagamentos automaticamente, você precisa conectar uma conta Stripe.
+          Isso permite que os clientes paguem diretamente para você.
+        </p>
+        <button 
+          onclick="conectarStripe()"
+          class="bg-indigo-600 text-white px-8 py-4 rounded-xl font-bold hover:bg-indigo-700 transition"
+        >
+          Conectar conta Stripe
+        </button>
+        <p class="text-xs text-slate-500 mt-4">
+          Seguro e criptografado • Você mantém controle total
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- MODAL NOVO PRODUTO -->
+<div id="modal-produto" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-6 z-50">
+  <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-10">
+    
+    <div class="flex items-center justify-between mb-8">
+      <h2 class="text-2xl font-black">Novo Produto</h2>
+      <button onclick="fecharModal()" class="text-slate-400 hover:text-slate-900">
+        ✕
+      </button>
+    </div>
+
+    <form id="form-produto" onsubmit="salvarProduto(event)">
+      
+      <div class="space-y-6">
+        
+        <div>
+          <label class="block text-sm font-semibold mb-2">Nome do SaaS *</label>
+          <input 
+            type="text" 
+            id="produto-nome-input" 
+            required
+            class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            placeholder="Ex: Agente de Vendas 24h"
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold mb-2">Categoria</label>
+          <select 
+            id="produto-categoria-input"
+            class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          >
+            <option value="">Selecione...</option>
+            <option value="Vendas">Vendas</option>
+            <option value="Marketing">Marketing</option>
+            <option value="Automação">Automação</option>
+            <option value="Atendimento">Atendimento</option>
+            <option value="Gestão">Gestão</option>
+            <option value="Financeiro">Financeiro</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold mb-2">Descrição curta *</label>
+          <textarea 
+            id="produto-descricao-input" 
+            required
+            rows="3"
+            class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            placeholder="Descrição que aparece nos cards (máx. 100 caracteres)"
+          ></textarea>
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold mb-2">Descrição completa</label>
+          <textarea 
+            id="produto-descricao-longa-input"
+            rows="8"
+            class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            placeholder="Descrição detalhada do produto, funcionalidades, benefícios..."
+          ></textarea>
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold mb-2">Preço mensal (R$) *</label>
+          <input 
+            type="number" 
+            id="produto-preco-input" 
+            required
+            step="0.01"
+            min="1"
+            class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            placeholder="47.00"
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold mb-2">Stripe Price ID *</label>
+          <input 
+            type="text" 
+            id="produto-stripe-price-input" 
+            required
+            class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            placeholder="price_1SzjiVE3IKoGtVrQtt5GGccz"
+          />
+          <p class="text-xs text-slate-500 mt-2">
+            Crie um produto na Stripe e cole o Price ID aqui
+          </p>
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold mb-2">Stripe Product ID *</label>
+          <input 
+            type="text" 
+            id="produto-stripe-product-input" 
+            required
+            class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            placeholder="prod_xxxxx"
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold mb-2">URL do Logo (opcional)</label>
+          <input 
+            type="url" 
+            id="produto-logo-input"
+            class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            placeholder="https://..."
+          />
+        </div>
+
+      </div>
+
+      <div class="flex gap-4 mt-8">
+        <button 
+          type="submit"
+          id="btn-salvar-produto"
+          class="flex-1 bg-indigo-600 text-white py-4 rounded-xl font-bold hover:bg-indigo-700 transition"
+        >
+          Criar Produto
+        </button>
+        <button 
+          type="button"
+          onclick="fecharModal()"
+          class="px-8 py-4 border border-slate-200 rounded-xl font-bold hover:bg-slate-50 transition"
+        >
+          Cancelar
+        </button>
+      </div>
+
+    </form>
+
+  </div>
+</div>
+
+<!-- SCRIPTS -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+
+<script>
+let userAtual = null;
+let sellerAtual = null;
+
+// Verificar autenticação
+async function verificarAuth() {
+  const { data: { session } } = await supabase.auth.getSession();
+  
+  if (!session) {
+    document.getElementById('tela-login').classList.remove('hidden');
+    document.getElementById('dashboard').classList.add('hidden');
+    return;
+  }
+
+  userAtual = session.user;
+  
+  // Buscar dados do seller
+  const { data: seller } = await supabase
+    .from('sellers')
+    .select('*')
+    .eq('id', userAtual.id)
+    .single();
+
+  sellerAtual = seller;
+
+  // Mostrar dashboard
+  document.getElementById('tela-login').classList.add('hidden');
+  document.getElementById('dashboard').classList.remove('hidden');
+  document.getElementById('user-email').textContent = userAtual.email;
+
+  // Carregar dados
+  carregarProdutos();
+  carregarVendas();
+  verificarContaStripe();
+}
+
+// Fazer login
+async function fazerLogin() {
+  const email = document.getElementById('email').value;
+  const senha = document.getElementById('senha').value;
+  const btn = document.getElementById('btn-login');
+
+  if (!email || !senha) {
+    alert('Preencha email e senha');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Processando...';
+
+  try {
+    // Tentar login
+    let { data, error } = await supabase.auth.signInWithPassword({
+      email, password: senha
+    });
+
+    // Se falhar, tentar cadastro
+    if (error) {
+      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password: senha
+      });
+
+      if (signUpError) throw signUpError;
+      
+      // Criar registro de seller
+      await supabase.from('sellers').insert({
+        id: signUpData.user.id,
+        email: email,
+        nome: email.split('@')[0]
+      });
+
+      data = signUpData;
+    }
+
+    verificarAuth();
+
+  } catch (error) {
+    alert('Erro: ' + error.message);
+    btn.disabled = false;
+    btn.textContent = 'Entrar / Cadastrar';
+  }
+}
+
+// Logout
+async function logout() {
+  await supabase.auth.signOut();
+  location.reload();
+}
+
+// Mudar tab
+function mudarTab(tab) {
+  // Resetar tabs
+  ['produtos', 'vendas', 'conta'].forEach(t => {
+    document.getElementById(`tab-${t}`).classList.remove('border-indigo-600', 'text-indigo-600');
+    document.getElementById(`tab-${t}`).classList.add('border-transparent', 'text-slate-600');
+    document.getElementById(`content-${t}`).classList.add('hidden');
+  });
+
+  // Ativar tab selecionada
+  document.getElementById(`tab-${tab}`).classList.add('border-indigo-600', 'text-indigo-600');
+  document.getElementById(`tab-${tab}`).classList.remove('border-transparent', 'text-slate-600');
+  document.getElementById(`content-${tab}`).classList.remove('hidden');
+}
+
+// Carregar produtos
+async function carregarProdutos() {
+  const { data, error } = await supabase
+    .from('produtos')
+    .select('*')
+    .eq('seller_id', userAtual.id)
+    .order('created_at', { ascending: false });
+
+  if (data && data.length > 0) {
+    document.getElementById('lista-produtos').innerHTML = data.map(p => `
+      <div class="bg-white rounded-2xl p-7 shadow-sm">
+        <div class="flex justify-between items-start mb-4">
+          <h3 class="font-bold text-lg">${p.nome}</h3>
+          ${p.verificado ? '<span class="text-xs font-semibold text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full">✓</span>' : ''}
+        </div>
+        <p class="text-slate-600 text-sm mb-6">${p.descricao}</p>
+        <div class="flex items-center justify-between border-t border-slate-100 pt-4">
+          <span class="font-bold">R$ ${p.preco} / mês</span>
+          <a href="produto.html?id=${p.id}" target="_blank" class="text-indigo-600 text-sm font-semibold hover:underline">
+            Ver produto →
+          </a>
+        </div>
+      </div>
+    `).join('');
+    document.getElementById('produtos-vazio').classList.add('hidden');
+  } else {
+    document.getElementById('lista-produtos').innerHTML = '';
+    document.getElementById('produtos-vazio').classList.remove('hidden');
+  }
+}
+
+// Carregar vendas
+async function carregarVendas() {
+  const { data, error } = await supabase
+    .from('compras')
+    .select(`
+      *,
+      produtos (nome)
+    `)
+    .eq('seller_id', userAtual.id)
+    .order('created_at', { ascending: false });
+
+  if (data) {
+    // Stats
+    const total = data.reduce((sum, v) => sum + parseFloat(v.valor), 0);
+    const ativas = data.filter(v => v.status === 'completed').length;
+    const mesAtual = new Date().getMonth();
+    const esteMes = data
+      .filter(v => new Date(v.created_at).getMonth() === mesAtual)
+      .reduce((sum, v) => sum + parseFloat(v.valor), 0);
+
+    document.getElementById('total-vendas').textContent = `R$ ${total.toFixed(2)}`;
+    document.getElementById('assinaturas-ativas').textContent = ativas;
+    document.getElementById('vendas-mes').textContent = `R$ ${esteMes.toFixed(2)}`;
+
+    // Tabela
+    if (data.length > 0) {
+      document.getElementById('tabela-vendas').innerHTML = data.map(v => `
+        <tr class="border-b border-slate-100">
+          <td class="px-6 py-4 text-sm font-medium">${v.produtos.nome}</td>
+          <td class="px-6 py-4 text-sm text-slate-600">${v.comprador_email}</td>
+          <td class="px-6 py-4 text-sm font-semibold">R$ ${v.valor}</td>
+          <td class="px-6 py-4">
+            <span class="text-xs px-3 py-1 rounded-full ${v.status === 'completed' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'}">
+              ${v.status}
+            </span>
+          </td>
+          <td class="px-6 py-4 text-sm text-slate-600">${new Date(v.created_at).toLocaleDateString('pt-BR')}</td>
+        </tr>
+      `).join('');
+    }
+  }
+}
+
+// Verificar conta Stripe
+async function verificarContaStripe() {
+  if (sellerAtual && sellerAtual.stripe_account_id) {
+    document.getElementById('stripe-conectado').classList.remove('hidden');
+    document.getElementById('stripe-desconectado').classList.add('hidden');
+    document.getElementById('stripe-account-id').textContent = sellerAtual.stripe_account_id;
+  } else {
+    document.getElementById('stripe-conectado').classList.add('hidden');
+    document.getElementById('stripe-desconectado').classList.remove('hidden');
+  }
+}
+
+// Conectar Stripe
+function conectarStripe() {
+  alert('Em breve! Você precisará configurar Stripe Connect para conectar vendedores.');
+}
+
+// Modal produto
+function mostrarModalNovoProduto() {
+  document.getElementById('modal-produto').classList.remove('hidden');
+}
+
+function fecharModal() {
+  document.getElementById('modal-produto').classList.add('hidden');
+  document.getElementById('form-produto').reset();
+}
+
+// Salvar produto
+async function salvarProduto(e) {
+  e.preventDefault();
+  
+  const btn = document.getElementById('btn-salvar-produto');
+  btn.disabled = true;
+  btn.textContent = 'Salvando...';
+
+  try {
+    const { error } = await supabase.from('produtos').insert({
+      seller_id: userAtual.id,
+      nome: document.getElementById('produto-nome-input').value,
+      categoria: document.getElementById('produto-categoria-input').value,
+      descricao: document.getElementById('produto-descricao-input').value,
+      descricao_longa: document.getElementById('produto-descricao-longa-input').value,
+      preco: document.getElementById('produto-preco-input').value,
+      stripe_price_id: document.getElementById('produto-stripe-price-input').value,
+      stripe_product_id: document.getElementById('produto-stripe-product-input').value,
+      logo_url: document.getElementById('produto-logo-input').value,
+      verificado: false,
+      ativo: true
+    });
+
+    if (error) throw error;
+
+    fecharModal();
+    carregarProdutos();
+    alert('Produto criado com sucesso!');
+
+  } catch (error) {
+    alert('Erro ao criar produto: ' + error.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Criar Produto';
+  }
+}
+
+// Iniciar
+window.onload = verificarAuth;
+</script>
+
+</body>
+</html>
