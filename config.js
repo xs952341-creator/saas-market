@@ -20,7 +20,7 @@ const CONFIG = {
   comissaoPlataforma: 10,
   
   // URL DO SEU SITE (para redirects)
-  siteUrl: window.location.origin
+  siteUrl: 'https://saas-market-blond.vercel.app/'
 };
 
 // Inicializar Supabase
