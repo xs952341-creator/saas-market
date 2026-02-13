@@ -5,13 +5,12 @@
 const CONFIG = {
   // SUPABASE
   supabase: {
-    url: 'SUA_URL_DO_SUPABASE', // Ex: https://xxxxx.supabase.co
-    anonKey: 'SUA_ANON_KEY_DO_SUPABASE'
-  },
+    url: 'https://mmjvqwolxyzloyfzalbo.supabase.co', // Ex: https://xxxxx.supabase.co
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1tanZxd29seHl6bG95ZnphbGJvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA5ODUwMTEsImV4cCI6MjA4NjU2MTAxMX0.UW2znkCsoij4wERR2SDq35nikbRW62I0LGGe1DUmibs'
   
   // STRIPE
   stripe: {
-    publishableKey: 'SUA_PUBLISHABLE_KEY_DA_STRIPE', // pk_test_... ou pk_live_...
+    publishableKey: 'pk_test_51SzLc3E3IKoGtVrQl5EOfE7WbGQaAwtZLXW1mBMUoH5In7FSrFal5G3OBMnS90XTGQGBZiWWUbJ1RPjUsrYnzVgZ00za1abLj4', // pk_test_... ou pk_live_...
     // Webhook secret (para validar eventos)
     webhookSecret: 'whsec_...' // Você vai configurar isso depois
   },
@@ -35,5 +34,5 @@ const stripe = Stripe(CONFIG.stripe.publishableKey);
 
 // Exportar para outros arquivos
 window.CONFIG = CONFIG;
-window.supabase = supabase;
-window.stripe = stripe;
+window.supabase = supabase,
+window.stripe = stripe,
