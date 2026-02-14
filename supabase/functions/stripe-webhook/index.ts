@@ -1,0 +1,58 @@
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
+import Stripe from "https://esm.sh/stripe@11.1.0?target=deno"
+
+serve(async (req) => {
+  const signature = req.headers.get('stripe-signature')
+
+  if (!signature) {
+    return new Response('No signature', { status: 400 })
+  }
+
+  const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') ?? '', {
+    apiVersion: '2022-11-15',
+    httpClient: Stripe.createFetchHttpClient(),
+  })
+
+  const body = await req.text()
+  let event
+
+  try {
+    event = stripe.webhooks.constructEvent(
+      body,
+      signature,
+      Deno.env.get('STRIPE_WEBHOOK_SECRET') ?? ''
+    )
+  } catch (err) {
+    return new Response(`Webhook Error: ${err.message}`, { status: 400 })
+  }
+
+  const supabaseClient = createClient(
+    Deno.env.get('SUPABASE_URL') ?? '',
+    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+  )
+
+  if (event.type === 'checkout.session.completed') {
+    const session = event.data.object
+    const { produtoId, sellerId } = session.metadata
+
+    // Atualizar a compra no banco de dados
+    const { error } = await supabaseClient
+      .from('compras')
+      .update({
+        status: 'completed',
+        comprador_email: session.customer_details.email,
+        comprador_nome: session.customer_details.name,
+        valor: session.amount_total / 100,
+        completed_at: new Date().toISOString()
+      })
+      .eq('stripe_session_id', session.id)
+
+    if (error) console.error('Erro ao atualizar compra:', error)
+  }
+
+  return new Response(JSON.stringify({ received: true }), {
+    headers: { 'Content-Type': 'application/json' },
+    status: 200,
+  })
+})

@@ -276,7 +276,7 @@ async function iniciarCheckout() {
 
   try {
     // Criar sessão de checkout no Stripe
-    const { data, error } = await supabase.functions.invoke('create-checkout', {
+    const { data, error } = await window.supabase.functions.invoke('create-checkout', {
       body: {
         priceId: produtoAtual.stripe_price_id,
         produtoId: produtoAtual.id,

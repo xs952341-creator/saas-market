@@ -279,7 +279,11 @@ async function carregarProdutoDestaque() {
       .limit(1)
       .single();
 
-    if (error) throw error;
+    if (error) {
+      console.warn('Nenhum produto em destaque encontrado ou erro:', error.message);
+      document.getElementById('produto-destaque').innerHTML = '<p class="text-slate-500">Nenhum produto em destaque no momento.</p>';
+      return;
+    }
 
     if (data) {
       document.getElementById('produto-destaque').innerHTML = `
@@ -319,7 +323,11 @@ async function carregarProdutosDestaque() {
       .order('created_at', { ascending: false })
       .limit(3);
 
-    if (error) throw error;
+    if (error) {
+      console.warn('Erro ao carregar produtos em destaque:', error.message);
+      document.getElementById('produtos-destaque').innerHTML = '<p class="text-slate-500 col-span-3 text-center">Nenhum produto encontrado.</p>';
+      return;
+    }
 
     if (data && data.length > 0) {
       document.getElementById('produtos-destaque').innerHTML = data.map(produto => `

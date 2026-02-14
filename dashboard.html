@@ -397,6 +397,7 @@ async function verificarAuth() {
   if (!session) {
     document.getElementById('tela-login').classList.remove('hidden');
     document.getElementById('dashboard').classList.add('hidden');
+    document.getElementById('user-email').textContent = '';
     return;
   }
 
@@ -472,8 +473,11 @@ async function fazerLogin() {
 
 // Logout
 async function logout() {
-  await supabase.auth.signOut();
-  location.reload();
+  const { error } = await supabase.auth.signOut();
+  if (error) {
+    console.error('Erro ao sair:', error.message);
+  }
+  window.location.href = 'index.html';
 }
 
 // Mudar tab
