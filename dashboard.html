@@ -439,33 +439,59 @@ async function fazerLogin() {
 
   try {
     // Tentar login
-    let { data, error } = await supabase.auth.signInWithPassword({
-      email, password: senha
+    const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
+      email,
+      password: senha
     });
 
-    // Se falhar, tentar cadastro
-    if (error) {
-      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-        email,
-        password: senha
-      });
-
-      if (signUpError) throw signUpError;
-      
-      // Criar registro de seller
-      await supabase.from('sellers').insert({
-        id: signUpData.user.id,
-        email: email,
-        nome: email.split('@')[0]
-      });
-
-      data = signUpData;
+    // Login ok: segue para dashboard
+    if (!loginError) {
+      await verificarAuth();
+      return;
     }
 
-    verificarAuth();
+    // Se falhar por credencial inválida, tenta cadastro automático
+    const errosDeCredencial = [
+      'Invalid login credentials',
+      'Email not confirmed',
+      'Invalid email or password'
+    ];
+    const deveTentarCadastro = errosDeCredencial.some(msg => loginError.message?.includes(msg));
+
+    if (!deveTentarCadastro) {
+      throw loginError;
+    }
+
+    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+      email,
+      password: senha
+    });
+
+    if (signUpError) throw signUpError;
+
+    if (!signUpData?.user) {
+      throw new Error('Não foi possível criar o usuário agora. Tente novamente em instantes.');
+    }
+
+    // Criar registro de seller (idempotente)
+    const { error: sellerError } = await supabase.from('sellers').upsert({
+      id: signUpData.user.id,
+      email: email,
+      nome: email.split('@')[0]
+    });
+    if (sellerError) throw sellerError;
+
+    // Alguns projetos exigem confirmação de e-mail antes de abrir sessão.
+    if (!signUpData.session) {
+      alert('Conta criada! Verifique seu e-mail para confirmar o cadastro e depois faça login.');
+      return;
+    }
+
+    await verificarAuth();
 
   } catch (error) {
-    alert('Erro: ' + error.message);
+    alert('Erro ao conectar: ' + error.message);
+  } finally {
     btn.disabled = false;
     btn.textContent = 'Entrar / Cadastrar';
   }
