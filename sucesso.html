@@ -144,6 +144,9 @@
 <script src="config.js"></script>
 
 <script>
+let tentativas = 0;
+const MAX_TENTATIVAS = 10;
+
 async function verificarPagamento() {
   try {
     const urlParams = new URLSearchParams(window.location.search);
@@ -162,16 +165,23 @@ async function verificarPagamento() {
         produtos (nome, preco)
       `)
       .eq('stripe_session_id', sessionId)
-      .single();
+      .maybeSingle();
 
     if (error) throw error;
 
     if (data && data.status === 'completed') {
       mostrarSucesso(data);
-    } else {
-      // Aguardar webhook processar
-      setTimeout(() => verificarPagamento(), 2000);
+      return;
     }
+
+    tentativas += 1;
+    if (tentativas >= MAX_TENTATIVAS) {
+      mostrarErro();
+      return;
+    }
+
+    // Aguardar webhook processar
+    setTimeout(() => verificarPagamento(), 2000);
 
   } catch (error) {
     console.error('Erro ao verificar pagamento:', error);
@@ -183,7 +193,7 @@ function mostrarSucesso(compra) {
   document.getElementById('loading').classList.add('hidden');
   document.getElementById('sucesso').classList.remove('hidden');
 
-  document.getElementById('produto-nome').textContent = compra.produtos.nome;
+  document.getElementById('produto-nome').textContent = compra.produtos?.nome || '-';
   document.getElementById('produto-valor').textContent = `R$ ${compra.valor} / mês`;
   document.getElementById('comprador-email').textContent = compra.comprador_email;
   document.getElementById('subscription-id').textContent = compra.stripe_subscription_id || 'N/A';

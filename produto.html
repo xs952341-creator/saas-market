@@ -265,6 +265,11 @@ function renderizarProduto(produto) {
 async function iniciarCheckout() {
   if (!produtoAtual) return;
 
+  if (!stripe) {
+    alert('Integração de pagamento indisponível no momento. Recarregue a página.');
+    return;
+  }
+
   const btn = document.getElementById('btn-comprar');
   btn.disabled = true;
   btn.innerHTML = 'Processando...';
