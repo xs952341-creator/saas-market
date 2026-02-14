@@ -1,15 +1,25 @@
+// ============================================
+// CONFIGURAÇÃO - SUBSTITUA COM SUAS CHAVES
+// ============================================
+
 const CONFIG = {
+  // SUPABASE
   supabase: {
-    url: process.env.https://mmjvqwolxyzloyfzalbo.supabase.co || '',
-    anonKey: process.env.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1tanZxd29seHl6bG95ZnphbGJvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA5ODUwMTEsImV4cCI6MjA4NjU2MTAxMX0.UW2znkCsoij4wERR2SDq35nikbRW62I0LGGe1DUmibs || ''
+    url: 'https://mmjvqwolxyzloyfzalbo.supabase.co', // Ex: https://xxxxx.supabase.co
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1tanZxd29seHl6bG95ZnphbGJvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA5ODUwMTEsImV4cCI6MjA4NjU2MTAxMX0.UW2znkCsoij4wERR2SDq35nikbRW62I0LGGe1DUmibs' // Começa com eyJhbGc...
   },
   
+  // STRIPE
   stripe: {
-    publishableKey: process.env.pk_test_51T09lnKA5X0ZTel56jjG1XT1F4qrxZ7hh1yXM0if38h3U957V4uQevD6gkSTNdLUh8dGluVmdaKMjrwdkAUBOyFU00QjKtPxVs|| ''
+    publishableKey: 'pk_test_51T09lnKA5X0ZTel56jjG1XT1F4qrxZ7hh1yXM0if38h3U957V4uQevD6gkSTNdLUh8dGluVmdaKMjrwdkAUBOyFU00QjKtPxVs' // Começa com pk_test_...
   },
   
+  // COMISSÃO DA PLATAFORMA (em %)
+  // Ex: 10 = você fica com 10% de cada venda
   comissaoPlataforma: 10,
-  siteUrl: process.env.https://saas-market-blond.vercel.app/ || window.location.origin
+  
+  // URL DO SEU SITE (atualizar depois do primeiro deploy)
+  siteUrl: 'https://saas-market-blond.vercel.app/' // Colocar URL da Vercel aqui
 };
 
 // Inicializar Supabase
