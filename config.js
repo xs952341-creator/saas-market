@@ -5,7 +5,7 @@ const CONFIG = {
   },
   
   stripe: {
-    publishableKey: process.env.pk_test_51SzLc3E3IKoGtVrQl5EOfE7WbGQaAwtZLXW1mBMUoH5In7FSrFal5G3OBMnS90XTGQGBZiWWUbJ1RPjUsrYnzVgZ00za1abLj4 || ''
+    publishableKey: process.env.pk_test_51T09lnKA5X0ZTel56jjG1XT1F4qrxZ7hh1yXM0if38h3U957V4uQevD6gkSTNdLUh8dGluVmdaKMjrwdkAUBOyFU00QjKtPxVs|| ''
   },
   
   comissaoPlataforma: 10,
