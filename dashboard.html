@@ -234,7 +234,11 @@ async function verificarAuth() {
   userAtual = session.user;
   document.getElementById('user-email').textContent = userAtual.email;
 
-  const { data: seller } = await supabase.from('sellers').select('*').eq('id', userAtual.id).maybeSingle();
+  const { data: seller, error: sellerError } = await supabase.from('sellers').select('*').eq('id', userAtual.id).maybeSingle();
+
+  if (sellerError) {
+    throw sellerError;
+  }
 
   if (!seller) {
     const { error: upsertSellerError } = await supabase.from('sellers').upsert({
@@ -247,7 +251,9 @@ async function verificarAuth() {
       throw upsertSellerError;
     }
 
-    const { data: sellerCriado } = await supabase.from('sellers').select('*').eq('id', userAtual.id).maybeSingle();
+    const { data: sellerCriado, error: sellerCriadoError } = await supabase.from('sellers').select('*').eq('id', userAtual.id).maybeSingle();
+    if (sellerCriadoError) throw sellerCriadoError;
+
     sellerAtual = sellerCriado;
   } else {
     sellerAtual = seller;
@@ -282,11 +288,13 @@ async function fazerLogin() {
 
       data = signUpData;
       if (signUpData.user) {
-        await supabase.from('sellers').upsert({
+        const { error: upsertError } = await supabase.from('sellers').upsert({
           id: signUpData.user.id,
           email,
           nome: email.split('@')[0]
         });
+
+        if (upsertError) throw upsertError;
       }
     }
 
@@ -310,6 +318,10 @@ async function carregarDadosDashboard() {
     supabase.from('compras').select('*, produtos(nome)').eq('seller_id', userAtual.id).order('created_at', { ascending: false }),
     supabase.from('produtos').select('*').eq('ativo', true).order('created_at', { ascending: false })
   ]);
+
+  if (produtosRes.error) throw produtosRes.error;
+  if (comprasRes.error) throw comprasRes.error;
+  if (lojaRes.error) throw lojaRes.error;
 
   meusProdutos = produtosRes.data || [];
   minhasVendas = comprasRes.data || [];
@@ -524,7 +536,16 @@ async function logout() {
   window.location.href = 'index.html';
 }
 
-window.onload = verificarAuth;
+window.onload = async () => {
+  try {
+    await verificarAuth();
+  } catch (error) {
+    console.error('Erro ao iniciar dashboard:', error);
+    alert('Não foi possível carregar seu dashboard agora. Tente novamente em instantes.');
+    document.getElementById('tela-login').classList.remove('hidden');
+    document.getElementById('dashboard').classList.add('hidden');
+  }
+};
 </script>
 
 </body>
