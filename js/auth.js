@@ -1,38 +1,41 @@
-// auth.js
+// Authentication Functions using Supabase Client
 
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = 'YOUR_SUPABASE_URL';
-const supabaseKey = 'YOUR_SUPABASE_ANON_KEY';
+const supabaseUrl = 'https://your-supabase-url.supabase.co';
+const supabaseKey = 'your-supabase-key';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-export async function loginComEmail(email, password) {
-    const { user, session, error } = await supabase.auth.signIn({ email, password });
-    return { user, session, error };
-}
+// Login with Email
+export const loginComEmail = async (email, password) => {
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  return { data, error };
+};
 
-export async function cadastrarComEmail(email, password) {
-    const { user, error } = await supabase.auth.signUp({ email, password });
-    return { user, error };
-}
+// Register with Email
+export const cadastrarComEmail = async (email, password) => {
+  const { data, error } = await supabase.auth.signUp({ email, password });
+  return { data, error };
+};
 
-export async function loginComOAuth(provider) {
-    const { user, session, error } = await supabase.auth.signIn({ provider });
-    return { user, session, error };
-}
+// Login with OAuth
+export const loginComOAuth = async (provider) => {
+  const { data, error } = await supabase.auth.signInWithOAuth({ provider });
+  return { data, error };
+};
 
-export async function getUsuarioAtual() {
-    const { data: { user }, error } = await supabase.auth.getUser();
-    return { user, error };
-}
+// Get Current User
+export const getUsuarioAtual = () => {
+  return supabase.auth.user();
+};
 
-export async function logout() {
-    const { error } = await supabase.auth.signOut();
-    return { error };
-}
+// Logout
+export const logout = async () => {
+  const { error } = await supabase.auth.signOut();
+  return { error };
+};
 
-export function onAuthStateChange(callback) {
-    supabase.auth.onAuthStateChange((event, session) => {
-        callback(event, session);
-    });
-}
+// On Auth State Change
+export const onAuthStateChange = (callback) => {
+  return supabase.auth.onAuthStateChange(callback);
+};
