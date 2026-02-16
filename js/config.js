@@ -1,12 +1,1 @@
-'use strict';
-
-// Supabase configuration
-const supabaseUrl = 'YOUR_SUPABASE_URL';
-const supabaseKey = 'YOUR_SUPABASE_KEY';
-const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
-
-// Stripe configuration
-const stripeKey = 'YOUR_STRIPE_KEY';
-const stripe = require('stripe')(stripeKey);
-
-export { supabaseClient, stripe };
+export const CONFIG = { supabase: { url: 'https://mmjvqwolxyzloyfzalbo.supabase.co', anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1tanZxd29seHl6bG95ZnphbGJvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA5ODUwMTEsImV4cCI6MjA4NjU2MTAxMX0.UW2znkCsoij4wERR2SDq35nikbRW62I0LGGe1DUmibs' }, stripe: { publishableKey: 'pk_test_51SzLc3E3IKoGtVrQl5EOfE7WbGQaAwtZLXW1mBMUoH5In7FSrFal5G3OBMnS90XTGQGBZiWWUbJ1RPjUsrYnzVgZ00za1abLj4' }, comissaoPlataforma: 10, siteUrl: window.location.origin }; export const supabase = window.supabase.createClient( CONFIG.supabase.url, CONFIG.supabase.anonKey ); export const stripe = typeof window.Stripe === 'function' ? window.Stripe(CONFIG.stripe.publishableKey) : null; window.CONFIG = CONFIG; window.supabaseClient = supabase; window.stripeClient = stripe;
