@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Hub — SaaSMarket</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .card-hover { transition: all 0.3s ease; }
+    .card-hover:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(79, 70, 229, 0.2); }
+  </style>
+</head>
+
+<body class="bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900 min-h-screen text-white">
+<nav class="bg-white/10 backdrop-blur-lg border-b border-white/10">
+  <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg"></div>
+      <span class="font-black tracking-tight text-xl text-white">SaaS<span class="text-indigo-400">Market</span></span>
+    </div>
+
+    <div class="flex items-center gap-6">
+      <span id="user-email" class="text-sm text-slate-300"></span>
+      <button onclick="logout()" class="text-sm text-slate-300 hover:text-white">Sair</button>
+    </div>
+  </div>
+</nav>
+
+<div class="max-w-6xl mx-auto px-6 py-20">
+  <div class="text-center mb-16">
+    <h1 class="text-5xl font-black mb-4">Bem-vindo ao <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">SaaSMarket</span></h1>
+    <p class="text-xl text-slate-300">Escolha como você quer começar</p>
+  </div>
+
+  <div class="bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl p-8 mb-12">
+    <div class="grid md:grid-cols-3 gap-8">
+      <div>
+        <p class="text-sm text-slate-400 mb-2">💰 Seu Saldo</p>
+        <p class="text-3xl font-black" id="saldo-usuario">R$ 0,00</p>
+      </div>
+      <div>
+        <p class="text-sm text-slate-400 mb-2">📊 Total Vendas</p>
+        <p class="text-3xl font-black" id="total-vendas">R$ 0,00</p>
+      </div>
+      <div>
+        <p class="text-sm text-slate-400 mb-2">⚡ Consumos Hoje</p>
+        <p class="text-3xl font-black" id="consumos-hoje">0</p>
+      </div>
+    </div>
+
+    <button onclick="mostrarModalDeposito()" class="mt-6 bg-emerald-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-emerald-700 transition">+ Adicionar Saldo</button>
+  </div>
+
+  <div class="grid md:grid-cols-2 gap-8">
+    <div class="card-hover bg-gradient-to-br from-indigo-600/20 to-purple-600/20 backdrop-blur-lg border border-indigo-500/30 rounded-3xl p-10 cursor-pointer" onclick="window.location.href='marketplace-microsaas.html'">
+      <div class="w-16 h-16 bg-indigo-500 rounded-2xl flex items-center justify-center mb-6">🛒</div>
+      <h2 class="text-3xl font-black mb-4">Explorar Marketplace</h2>
+      <p class="text-lg text-slate-300 mb-8">Descubra e use Micro-SaaS profissionais. Pague apenas pelo que usar, sem mensalidades.</p>
+      <div class="flex items-center gap-4 text-sm text-slate-400"><span>✓ Pay-per-Use</span><span>✓ Teste Grátis</span><span>✓ API Keys</span></div>
+      <div class="mt-6"><span class="inline-block bg-indigo-500 text-white px-4 py-2 rounded-lg font-bold">Ver Produtos →</span></div>
+    </div>
+
+    <div class="card-hover bg-gradient-to-br from-purple-600/20 to-pink-600/20 backdrop-blur-lg border border-purple-500/30 rounded-3xl p-10 cursor-pointer" onclick="window.location.href='publicar-microsaas.html'">
+      <div class="w-16 h-16 bg-purple-500 rounded-2xl flex items-center justify-center mb-6">⚙️</div>
+      <h2 class="text-3xl font-black mb-4">Publicar Micro-SaaS</h2>
+      <p class="text-lg text-slate-300 mb-8">Monetize suas APIs e automações. Receba pagamentos em tempo real por cada uso.</p>
+      <div class="flex items-center gap-4 text-sm text-slate-400"><span>✓ Streaming Payment</span><span>✓ Analytics</span><span>✓ Auto-Validação</span></div>
+      <div class="mt-6"><span class="inline-block bg-purple-500 text-white px-4 py-2 rounded-lg font-bold">Começar a Vender →</span></div>
+    </div>
+  </div>
+
+  <div class="mt-12 grid md:grid-cols-4 gap-6">
+    <div class="bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl p-6"><p class="text-sm text-slate-400 mb-2">🎯 Meus Produtos</p><p class="text-2xl font-black" id="total-produtos">0</p></div>
+    <div class="bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl p-6"><p class="text-sm text-slate-400 mb-2">⚡ APIs Ativas</p><p class="text-2xl font-black" id="apis-ativas">0</p></div>
+    <div class="bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl p-6"><p class="text-sm text-slate-400 mb-2">📈 Taxa Sucesso</p><p class="text-2xl font-black" id="taxa-sucesso">100%</p></div>
+    <div class="bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl p-6"><p class="text-sm text-slate-400 mb-2">💎 Investimentos</p><p class="text-2xl font-black" id="total-investimentos">R$ 0</p></div>
+  </div>
+</div>
+
+<div id="modal-deposito" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-6 z-50">
+  <div class="bg-slate-900 border border-white/10 rounded-2xl max-w-md w-full p-8">
+    <div class="flex items-center justify-between mb-6"><h3 class="text-2xl font-black">Adicionar Saldo</h3><button onclick="fecharModalDeposito()" class="text-slate-400 hover:text-white">✕</button></div>
+    <p class="text-slate-400 mb-6">Adicione créditos para usar os Micro-SaaS do marketplace</p>
+    <div class="mb-6"><label class="block text-sm font-semibold mb-2">Valor (R$)</label><input type="number" id="valor-deposito" placeholder="50.00" step="0.01" min="10" class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"/></div>
+    <div class="grid grid-cols-3 gap-3 mb-6"><button onclick="setValor(50)" class="bg-white/5 hover:bg-white/10 px-4 py-2 rounded-lg">R$ 50</button><button onclick="setValor(100)" class="bg-white/5 hover:bg-white/10 px-4 py-2 rounded-lg">R$ 100</button><button onclick="setValor(200)" class="bg-white/5 hover:bg-white/10 px-4 py-2 rounded-lg">R$ 200</button></div>
+    <button onclick="processarDeposito()" class="w-full bg-indigo-600 text-white py-4 rounded-xl font-bold hover:bg-indigo-700 transition">Adicionar Saldo</button>
+    <p class="text-xs text-center text-slate-500 mt-4">Pagamento seguro via Stripe</p>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://js.stripe.com/v3/"></script>
+<script src="config.js"></script>
+
+<script>
+let userAtual = null;
+
+async function garantirCarteira() {
+  const { data: carteira, error } = await supabase.from('carteiras').select('*').eq('user_id', userAtual.id).maybeSingle();
+  if (!carteira) {
+    const { data: novaCarteira, error: insertError } = await supabase.from('carteiras').insert({ user_id: userAtual.id, saldo: 0 }).select().single();
+    if (insertError) throw insertError;
+    return novaCarteira;
+  }
+  if (error) throw error;
+  return carteira;
+}
+
+async function verificarAuth() {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) {
+    window.location.href = 'dashboard.html';
+    return;
+  }
+
+  userAtual = session.user;
+  document.getElementById('user-email').textContent = userAtual.email;
+  await carregarDados();
+}
+
+async function carregarDados() {
+  try {
+    const carteira = await garantirCarteira();
+    document.getElementById('saldo-usuario').textContent = `R$ ${Number(carteira.saldo || 0).toFixed(2)}`;
+
+    const { data: produtos, error: produtosError } = await supabase.from('produtos').select('*').eq('seller_id', userAtual.id);
+    if (produtosError) throw produtosError;
+
+    if (produtos) {
+      document.getElementById('total-produtos').textContent = produtos.length;
+      document.getElementById('apis-ativas').textContent = produtos.filter((p) => p.ativo).length;
+      const mediaSuccess = produtos.reduce((acc, p) => acc + Number(p.taxa_sucesso || 100), 0) / (produtos.length || 1);
+      document.getElementById('taxa-sucesso').textContent = `${mediaSuccess.toFixed(1)}%`;
+    }
+
+    const { data: vendas, error: vendasError } = await supabase.from('consumos').select('valor_total').eq('seller_id', userAtual.id);
+    if (vendasError) throw vendasError;
+    if (vendas) {
+      const total = vendas.reduce((acc, v) => acc + Number(v.valor_total || 0), 0);
+      document.getElementById('total-vendas').textContent = `R$ ${total.toFixed(2)}`;
+    }
+
+    const hoje = new Date().toISOString().split('T')[0];
+    const { data: consumos, error: consumosError } = await supabase.from('consumos').select('id').eq('comprador_id', userAtual.id).gte('created_at', `${hoje}T00:00:00`);
+    if (consumosError) throw consumosError;
+    if (consumos) document.getElementById('consumos-hoje').textContent = consumos.length;
+  } catch (error) {
+    console.error('Erro ao carregar dados:', error);
+    alert('Erro ao carregar dados do Hub. Verifique se o schema v2 foi aplicado.');
+  }
+}
+
+function mostrarModalDeposito() { document.getElementById('modal-deposito').classList.remove('hidden'); }
+function fecharModalDeposito() { document.getElementById('modal-deposito').classList.add('hidden'); }
+function setValor(valor) { document.getElementById('valor-deposito').value = valor; }
+
+async function processarDeposito() {
+  const valor = Number(document.getElementById('valor-deposito').value);
+  if (!valor || valor < 10) {
+    alert('Valor mínimo: R$ 10,00');
+    return;
+  }
+
+  try {
+    const carteira = await garantirCarteira();
+    const saldoAnterior = Number(carteira.saldo || 0);
+    const novoSaldo = saldoAnterior + valor;
+
+    const { error: updateError } = await supabase.from('carteiras').update({ saldo: novoSaldo }).eq('user_id', userAtual.id);
+    if (updateError) throw updateError;
+
+    const { error: transacaoError } = await supabase.from('transacoes').insert({
+      user_id: userAtual.id,
+      tipo: 'deposito',
+      valor,
+      saldo_anterior: saldoAnterior,
+      saldo_novo: novoSaldo,
+      descricao: 'Depósito via Stripe (simulado)'
+    });
+    if (transacaoError) throw transacaoError;
+
+    alert('Saldo adicionado com sucesso!');
+    fecharModalDeposito();
+    await carregarDados();
+  } catch (error) {
+    console.error('Erro ao processar depósito:', error);
+    alert('Erro ao adicionar saldo. Tente novamente.');
+  }
+}
+
+async function logout() {
+  await supabase.auth.signOut();
+  window.location.href = 'index.html';
+}
+
+window.onload = verificarAuth;
+</script>
+
+</body>
+</html>
