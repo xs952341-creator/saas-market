@@ -389,10 +389,33 @@
 <script>
 let userAtual = null;
 let sellerAtual = null;
+const AUTH_TIMEOUT_MS = 12000;
+
+function withTimeout(promiseLike, acao, timeoutMs = AUTH_TIMEOUT_MS) {
+  let timer = null;
+  const timeoutPromise = new Promise((_, reject) => {
+    timer = setTimeout(() => reject(new Error(`${acao} demorou mais que ${timeoutMs}ms`)), timeoutMs);
+  });
+
+  const operacao = Promise.resolve(promiseLike)
+    .then((resultado) => {
+      clearTimeout(timer);
+      return resultado;
+    })
+    .catch((erro) => {
+      clearTimeout(timer);
+      throw erro;
+    });
+
+  return Promise.race([operacao, timeoutPromise]);
+}
 
 // Verificar autenticação
-async function verificarAuth() {
-  const { data: { session } } = await supabase.auth.getSession();
+async function verificarAuth(sessaoAtual = null) {
+  const session = sessaoAtual || (await withTimeout(
+    supabase.auth.getSession(),
+    'Verificação de sessão'
+  )).data.session;
   
   if (!session) {
     document.getElementById('tela-login').classList.remove('hidden');
@@ -402,24 +425,27 @@ async function verificarAuth() {
   }
 
   userAtual = session.user;
-  
-  // Buscar dados do seller
-  const { data: seller } = await supabase
-    .from('sellers')
-    .select('*')
-    .eq('id', userAtual.id)
-    .single();
 
-  sellerAtual = seller;
-
-  // Mostrar dashboard
+  // Mostrar dashboard primeiro para melhorar percepção de carregamento.
   document.getElementById('tela-login').classList.add('hidden');
   document.getElementById('dashboard').classList.remove('hidden');
   document.getElementById('user-email').textContent = userAtual.email;
 
-  // Carregar dados
-  carregarProdutos();
-  carregarVendas();
+  // Carrega seller e dados em paralelo para reduzir atraso total.
+  const [sellerResp] = await Promise.all([
+    withTimeout(
+      supabase
+        .from('sellers')
+        .select('*')
+        .eq('id', userAtual.id)
+        .single(),
+      'Carregamento da conta do vendedor'
+    ),
+    carregarProdutos(),
+    carregarVendas()
+  ]);
+
+  sellerAtual = sellerResp?.data || null;
   verificarContaStripe();
 }
 
@@ -439,33 +465,68 @@ async function fazerLogin() {
 
   try {
     // Tentar login
-    let { data, error } = await supabase.auth.signInWithPassword({
-      email, password: senha
-    });
-
-    // Se falhar, tentar cadastro
-    if (error) {
-      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+    const { data: loginData, error: loginError } = await withTimeout(
+      supabase.auth.signInWithPassword({
         email,
         password: senha
-      });
+      }),
+      'Login'
+    );
 
-      if (signUpError) throw signUpError;
-      
-      // Criar registro de seller
-      await supabase.from('sellers').insert({
+    // Login ok: segue para dashboard
+    if (!loginError) {
+      await verificarAuth(loginData?.session || null);
+      return;
+    }
+
+    // Se falhar por credencial inválida, tenta cadastro automático
+    const errosDeCredencial = [
+      'Invalid login credentials',
+      'Email not confirmed',
+      'Invalid email or password'
+    ];
+    const deveTentarCadastro = errosDeCredencial.some(msg => loginError.message?.includes(msg));
+
+    if (!deveTentarCadastro) {
+      throw loginError;
+    }
+
+    const { data: signUpData, error: signUpError } = await withTimeout(
+      supabase.auth.signUp({
+        email,
+        password: senha
+      }),
+      'Cadastro'
+    );
+
+    if (signUpError) throw signUpError;
+
+    if (!signUpData?.user) {
+      throw new Error('Não foi possível criar o usuário agora. Tente novamente em instantes.');
+    }
+
+    // Criar registro de seller (idempotente)
+    const { error: sellerError } = await withTimeout(
+      supabase.from('sellers').upsert({
         id: signUpData.user.id,
         email: email,
         nome: email.split('@')[0]
-      });
+      }),
+      'Criação do seller'
+    );
+    if (sellerError) throw sellerError;
 
-      data = signUpData;
+    // Alguns projetos exigem confirmação de e-mail antes de abrir sessão.
+    if (!signUpData.session) {
+      alert('Conta criada! Verifique seu e-mail para confirmar o cadastro e depois faça login.');
+      return;
     }
 
-    verificarAuth();
+    await verificarAuth(signUpData.session);
 
   } catch (error) {
-    alert('Erro: ' + error.message);
+    alert('Erro ao conectar: ' + error.message);
+  } finally {
     btn.disabled = false;
     btn.textContent = 'Entrar / Cadastrar';
   }
