@@ -234,8 +234,24 @@ async function verificarAuth() {
   userAtual = session.user;
   document.getElementById('user-email').textContent = userAtual.email;
 
-  const { data: seller } = await supabase.from('sellers').select('*').eq('id', userAtual.id).single();
-  sellerAtual = seller;
+  const { data: seller } = await supabase.from('sellers').select('*').eq('id', userAtual.id).maybeSingle();
+
+  if (!seller) {
+    const { error: upsertSellerError } = await supabase.from('sellers').upsert({
+      id: userAtual.id,
+      email: userAtual.email,
+      nome: (userAtual.email || '').split('@')[0] || 'seller'
+    });
+
+    if (upsertSellerError) {
+      throw upsertSellerError;
+    }
+
+    const { data: sellerCriado } = await supabase.from('sellers').select('*').eq('id', userAtual.id).maybeSingle();
+    sellerAtual = sellerCriado;
+  } else {
+    sellerAtual = seller;
+  }
 
   document.getElementById('tela-login').classList.add('hidden');
   document.getElementById('dashboard').classList.remove('hidden');
@@ -342,7 +358,11 @@ function renderVisao() {
 
 function desenharGraficoGanhos(vendas) {
   const canvas = document.getElementById('grafico-ganhos');
+  if (!canvas) return;
+
   const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
   const width = canvas.width = canvas.offsetWidth;
   const height = canvas.height = 220;
 
@@ -377,14 +397,18 @@ function desenharGraficoGanhos(vendas) {
     const y = height - padding - ((height - padding * 2) * (valor / max));
     if (index === 0) ctx.moveTo(x, y);
     else ctx.lineTo(x, y);
+  });
 
-    ctx.fillStyle = '#4f46e5';
+  ctx.stroke();
+
+  ctx.fillStyle = '#4f46e5';
+  pontos.forEach((valor, index) => {
+    const x = padding + stepX * index;
+    const y = height - padding - ((height - padding * 2) * (valor / max));
     ctx.beginPath();
     ctx.arc(x, y, 3, 0, Math.PI * 2);
     ctx.fill();
   });
-
-  ctx.stroke();
 }
 
 function renderLoja() {
