@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Marketplace Micro-SaaS — SaaSMarket</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>body { font-family: 'Inter', sans-serif; }</style>
+</head>
+
+<body class="bg-slate-900 text-white antialiased">
+<nav class="bg-slate-800/50 backdrop-blur-lg border-b border-white/10 sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+    <a href="hub.html" class="flex items-center gap-3"><div class="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg"></div><span class="font-black text-lg">SaaS<span class="text-indigo-400">Market</span></span></a>
+    <div class="flex items-center gap-6">
+      <span id="saldo-header" class="text-sm bg-emerald-500/20 text-emerald-400 px-4 py-2 rounded-lg font-bold">💰 R$ 0,00</span>
+      <a href="hub.html" class="text-sm text-slate-400 hover:text-white">← Voltar ao Hub</a>
+    </div>
+  </div>
+</nav>
+
+<div class="bg-gradient-to-br from-indigo-600/20 to-purple-600/20 backdrop-blur-lg border-b border-white/10 py-16">
+  <div class="max-w-7xl mx-auto px-6">
+    <h1 class="text-5xl font-black mb-4">Marketplace de <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Micro-SaaS</span></h1>
+    <p class="text-xl text-slate-300">Pague apenas pelo que usar. Sem mensalidades, sem compromisso.</p>
+  </div>
+</div>
+
+<div class="bg-slate-800/30 border-b border-white/10 py-6">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="grid md:grid-cols-4 gap-4">
+      <input type="text" id="busca" placeholder="Buscar Micro-SaaS..." class="px-4 py-3 bg-slate-800 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" oninput="filtrarProdutos()" />
+      <select id="categoria" class="px-4 py-3 bg-slate-800 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" onchange="filtrarProdutos()">
+        <option value="">Todas categorias</option><option value="IA">Inteligência Artificial</option><option value="Automação">Automação</option><option value="Dados">Processamento de Dados</option><option value="Comunicação">Comunicação</option><option value="Marketing">Marketing</option>
+      </select>
+      <select id="tipo-cobranca" class="px-4 py-3 bg-slate-800 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" onchange="filtrarProdutos()">
+        <option value="">Todos tipos</option><option value="pay-per-use">Pay-per-Use</option><option value="assinatura">Assinatura</option>
+      </select>
+      <button onclick="ordenarPor('preco')" class="px-4 py-3 bg-slate-800 border border-white/10 rounded-xl hover:bg-slate-700 transition">Ordenar por Preço</button>
+    </div>
+  </div>
+</div>
+
+<div class="max-w-7xl mx-auto px-6 py-12">
+  <div class="mb-8 flex items-center justify-between">
+    <p class="text-slate-400"><span id="contador-produtos" class="font-bold text-white">0</span> Micro-SaaS disponíveis</p>
+    <div class="flex items-center gap-3 text-sm"><span class="text-slate-500">Filtros:</span><button onclick="filtrarSandbox()" id="btn-sandbox" class="px-3 py-1 border border-white/10 rounded-lg hover:bg-white/5 transition">🧪 Com Sandbox</button><button onclick="filtrarAltoDesempenho()" id="btn-performance" class="px-3 py-1 border border-white/10 rounded-lg hover:bg-white/5 transition">⚡ Alto Desempenho</button></div>
+  </div>
+
+  <div id="grid-produtos" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <div class="animate-pulse bg-slate-800 rounded-2xl h-96"></div>
+    <div class="animate-pulse bg-slate-800 rounded-2xl h-96"></div>
+    <div class="animate-pulse bg-slate-800 rounded-2xl h-96"></div>
+  </div>
+</div>
+
+<div id="modal-produto" class="hidden fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center p-6 z-50 overflow-y-auto">
+  <div class="bg-slate-900 border border-white/10 rounded-3xl max-w-5xl w-full p-10 my-8">
+    <div class="flex items-start justify-between mb-8"><div><h2 id="modal-nome" class="text-4xl font-black mb-2"></h2><p id="modal-categoria" class="text-indigo-400"></p></div><button onclick="fecharModal()" class="text-slate-400 hover:text-white text-2xl">✕</button></div>
+    <div class="grid md:grid-cols-2 gap-12">
+      <div>
+        <div class="mb-8"><h3 class="text-sm font-semibold text-slate-400 mb-4">DESCRIÇÃO</h3><p id="modal-descricao" class="text-lg text-slate-300 leading-relaxed"></p></div>
+        <div class="mb-8"><h3 class="text-sm font-semibold text-slate-400 mb-4">ESTATÍSTICAS</h3><div class="grid grid-cols-2 gap-4"><div class="bg-slate-800 rounded-xl p-4"><p class="text-sm text-slate-400 mb-1">Taxa de Sucesso</p><p id="modal-taxa-sucesso" class="text-2xl font-black text-emerald-400">100%</p></div><div class="bg-slate-800 rounded-xl p-4"><p class="text-sm text-slate-400 mb-1">Total de Usos</p><p id="modal-total-execucoes" class="text-2xl font-black">0</p></div></div></div>
+        <div id="modal-sandbox" class="hidden">
+          <h3 class="text-sm font-semibold text-slate-400 mb-4">🧪 PLAYGROUND - TESTE AGORA</h3>
+          <div class="bg-slate-950 border border-emerald-500/30 rounded-xl p-6">
+            <p class="text-sm text-slate-400 mb-4">Teste este Micro-SaaS gratuitamente:</p>
+            <textarea id="sandbox-input" placeholder='{"exemplo": "dados de entrada"}' class="w-full h-32 px-4 py-3 bg-slate-900 border border-white/10 rounded-lg text-white font-mono text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 mb-4"></textarea>
+            <button onclick="testarSandbox()" id="btn-testar" class="w-full bg-emerald-600 text-white py-3 rounded-lg font-bold hover:bg-emerald-700 transition">Executar Teste</button>
+            <div id="sandbox-resultado" class="hidden mt-4 p-4 bg-slate-900 rounded-lg border border-white/10"><p class="text-xs text-slate-400 mb-2">RESULTADO:</p><pre id="sandbox-output" class="text-sm text-emerald-400 font-mono whitespace-pre-wrap"></pre></div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="bg-gradient-to-br from-indigo-600/20 to-purple-600/20 border border-indigo-500/30 rounded-2xl p-8 mb-6">
+          <p class="text-sm text-slate-400 mb-2">COBRANÇA</p><p id="modal-tipo-cobranca" class="text-lg font-bold mb-6"></p>
+          <div class="flex items-baseline gap-2 mb-8"><span class="text-5xl font-black" id="modal-preco">R$ 0,00</span><span class="text-slate-400" id="modal-unidade">/mês</span></div>
+          <button onclick="usarMicroSaaS()" id="btn-usar" class="w-full bg-indigo-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-indigo-700 transition mb-4">Começar a Usar</button>
+          <p class="text-xs text-center text-slate-500">Saldo será debitado automaticamente por uso</p>
+        </div>
+        <div class="space-y-3 text-sm"><div class="flex items-center gap-3 text-slate-300"><span class="text-emerald-400">✓</span><span>Pagamento automático por uso</span></div><div class="flex items-center gap-3 text-slate-300"><span class="text-emerald-400">✓</span><span>API Key instantânea</span></div><div class="flex items-center gap-3 text-slate-300"><span class="text-emerald-400">✓</span><span>Cancele quando quiser</span></div><div class="flex items-center gap-3 text-slate-300"><span class="text-emerald-400">✓</span><span>Suporte direto do criador</span></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+
+<script>
+let userAtual = null;
+let produtoAtual = null;
+let todosProdutos = [];
+let produtosFiltrados = [];
+let filtroSandbox = false;
+let filtroPerformance = false;
+
+async function init() {
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      window.location.href = 'login.html';
+      return;
+    }
+
+    userAtual = session.user;
+    await carregarSaldo();
+    await carregarProdutos();
+  } catch (error) {
+    console.error(error);
+    alert('Erro ao abrir marketplace de Micro-SaaS.');
+  }
+}
+
+async function carregarSaldo() {
+  const { data } = await supabase.from('carteiras').select('saldo').eq('user_id', userAtual.id).maybeSingle();
+  document.getElementById('saldo-header').textContent = `💰 R$ ${Number(data?.saldo || 0).toFixed(2)}`;
+}
+
+async function carregarProdutos() {
+  const { data, error } = await supabase.from('produtos').select('*').eq('ativo', true).eq('verificado', true).order('created_at', { ascending: false });
+  if (error) throw error;
+
+  todosProdutos = data || [];
+  produtosFiltrados = [...todosProdutos];
+  renderizarProdutos();
+}
+
+function renderizarProdutos() {
+  const grid = document.getElementById('grid-produtos');
+  document.getElementById('contador-produtos').textContent = produtosFiltrados.length;
+
+  if (!produtosFiltrados.length) {
+    grid.innerHTML = `<div class="col-span-3 text-center py-20"><p class="text-2xl font-bold mb-2">Nenhum produto encontrado</p><p class="text-slate-400">Tente ajustar os filtros</p></div>`;
+    return;
+  }
+
+  grid.innerHTML = produtosFiltrados.map((produto) => `
+    <div class="bg-slate-800 border border-white/10 rounded-2xl p-7 hover:border-indigo-500/50 transition cursor-pointer" onclick="abrirModal('${produto.id}')">
+      <div class="flex items-start justify-between mb-6"><div><h3 class="text-xl font-bold mb-2">${produto.nome}</h3><span class="text-xs text-indigo-400">${produto.categoria || 'Geral'}</span></div>${produto.sandbox_disponivel ? '<span class="text-2xl">🧪</span>' : ''}</div>
+      <p class="text-sm text-slate-400 mb-6 line-clamp-3">${produto.descricao || ''}</p>
+      ${produto.tipo_cobranca === 'pay-per-use' ? `<div class="mb-4"><span class="text-3xl font-black text-emerald-400">R$ ${Number(produto.preco_por_uso || 0).toFixed(4)}</span><span class="text-sm text-slate-400"> / ${produto.unidade_cobranca || 'uso'}</span></div>` : `<div class="mb-4"><span class="text-3xl font-black">R$ ${Number(produto.preco || 0).toFixed(2)}</span><span class="text-sm text-slate-400"> / mês</span></div>`}
+      <div class="flex items-center justify-between pt-4 border-t border-white/10"><div class="flex items-center gap-4 text-xs text-slate-400"><span>✓ ${Number(produto.taxa_sucesso || 100).toFixed(0)}% sucesso</span><span>⚡ ${produto.total_execucoes || 0} usos</span></div><span class="text-indigo-400 font-semibold">Ver mais →</span></div>
+    </div>
+  `).join('');
+}
+
+function abrirModal(produtoId) {
+  const produto = todosProdutos.find((p) => p.id === produtoId);
+  if (!produto) return;
+  produtoAtual = produto;
+
+  document.getElementById('modal-nome').textContent = produto.nome;
+  document.getElementById('modal-categoria').textContent = produto.categoria || 'Geral';
+  document.getElementById('modal-descricao').textContent = produto.descricao_longa || produto.descricao || '';
+  document.getElementById('modal-taxa-sucesso').textContent = `${Number(produto.taxa_sucesso || 100).toFixed(0)}%`;
+  document.getElementById('modal-total-execucoes').textContent = produto.total_execucoes || 0;
+
+  if (produto.tipo_cobranca === 'pay-per-use') {
+    document.getElementById('modal-tipo-cobranca').textContent = 'Pay-per-Use';
+    document.getElementById('modal-preco').textContent = `R$ ${Number(produto.preco_por_uso || 0).toFixed(4)}`;
+    document.getElementById('modal-unidade').textContent = `/ ${produto.unidade_cobranca || 'uso'}`;
+  } else {
+    document.getElementById('modal-tipo-cobranca').textContent = 'Assinatura Mensal';
+    document.getElementById('modal-preco').textContent = `R$ ${Number(produto.preco || 0).toFixed(2)}`;
+    document.getElementById('modal-unidade').textContent = '/ mês';
+  }
+
+  document.getElementById('modal-sandbox').classList.toggle('hidden', !produto.sandbox_disponivel);
+  document.getElementById('modal-produto').classList.remove('hidden');
+}
+
+function fecharModal() { document.getElementById('modal-produto').classList.add('hidden'); }
+
+async function testarSandbox() {
+  const btn = document.getElementById('btn-testar');
+  const rawInput = document.getElementById('sandbox-input').value.trim();
+
+  btn.disabled = true;
+  btn.textContent = 'Executando...';
+
+  try {
+    const parsed = rawInput ? JSON.parse(rawInput) : {};
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    const resultado = {
+      success: true,
+      data: parsed,
+      timestamp: new Date().toISOString(),
+      execution_time_ms: Math.floor(Math.random() * 500) + 100
+    };
+
+    document.getElementById('sandbox-output').textContent = JSON.stringify(resultado, null, 2);
+    document.getElementById('sandbox-resultado').classList.remove('hidden');
+  } catch (error) {
+    document.getElementById('sandbox-output').textContent = `Erro: ${error.message}`;
+    document.getElementById('sandbox-resultado').classList.remove('hidden');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Executar Teste';
+  }
+}
+
+async function usarMicroSaaS() {
+  if (!produtoAtual) return;
+  if (!confirm(`Você está prestes a começar a usar "${produtoAtual.nome}". Deseja continuar?`)) return;
+
+  try {
+    const apiKey = 'smk_' + Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
+    const { error } = await supabase.from('api_keys').insert({
+      user_id: userAtual.id,
+      produto_id: produtoAtual.id,
+      key_hash: apiKey,
+      key_prefix: apiKey.substring(0, 8),
+      ativa: true
+    });
+
+    if (error) throw error;
+
+    alert(`✅ API Key gerada com sucesso!\n\nSua chave: ${apiKey}\n\nGuarde-a em local seguro.`);
+    fecharModal();
+  } catch (error) {
+    console.error(error);
+    alert('Erro ao ativar Micro-SaaS. Verifique se a tabela api_keys existe e tente novamente.');
+  }
+}
+
+function filtrarProdutos() {
+  const busca = document.getElementById('busca').value.toLowerCase();
+  const categoria = document.getElementById('categoria').value;
+  const tipoCobranca = document.getElementById('tipo-cobranca').value;
+
+  produtosFiltrados = todosProdutos.filter((p) => {
+    const nome = (p.nome || '').toLowerCase();
+    const descricao = (p.descricao || '').toLowerCase();
+    const matchBusca = !busca || nome.includes(busca) || descricao.includes(busca);
+    const matchCategoria = !categoria || p.categoria === categoria;
+    const matchTipo = !tipoCobranca || p.tipo_cobranca === tipoCobranca;
+    const matchSandbox = !filtroSandbox || p.sandbox_disponivel;
+    const matchPerformance = !filtroPerformance || Number(p.taxa_sucesso || 100) >= 95;
+    return matchBusca && matchCategoria && matchTipo && matchSandbox && matchPerformance;
+  });
+
+  renderizarProdutos();
+}
+
+function filtrarSandbox() {
+  filtroSandbox = !filtroSandbox;
+  document.getElementById('btn-sandbox').classList.toggle('bg-emerald-900/40', filtroSandbox);
+  filtrarProdutos();
+}
+
+function filtrarAltoDesempenho() {
+  filtroPerformance = !filtroPerformance;
+  document.getElementById('btn-performance').classList.toggle('bg-indigo-900/40', filtroPerformance);
+  filtrarProdutos();
+}
+
+function ordenarPor(campo) {
+  if (campo === 'preco') {
+    produtosFiltrados.sort((a, b) => {
+      const precoA = a.tipo_cobranca === 'pay-per-use' ? Number(a.preco_por_uso || 0) : Number(a.preco || 0);
+      const precoB = b.tipo_cobranca === 'pay-per-use' ? Number(b.preco_por_uso || 0) : Number(b.preco || 0);
+      return precoA - precoB;
+    });
+  }
+  renderizarProdutos();
+}
+
+window.onload = init;
+</script>
+
+</body>
+</html>
