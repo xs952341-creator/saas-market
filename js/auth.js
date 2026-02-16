@@ -1,24 +1,38 @@
+// auth.js
+
 import { createClient } from '@supabase/supabase-js';
 
-const SUPABASE_URL = 'your_supabase_url';
-const SUPABASE_ANON_KEY = 'your_supabase_anon_key';
+const supabaseUrl = 'YOUR_SUPABASE_URL';
+const supabaseKey = 'YOUR_SUPABASE_ANON_KEY';
+const supabase = createClient(supabaseUrl, supabaseKey);
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+export async function loginComEmail(email, password) {
+    const { user, session, error } = await supabase.auth.signIn({ email, password });
+    return { user, session, error };
+}
 
-export const register = async (email, password) => {
+export async function cadastrarComEmail(email, password) {
     const { user, error } = await supabase.auth.signUp({ email, password });
-    if (error) throw error;
-    return user;
-};
+    return { user, error };
+}
 
-export const login = async (email, password) => {
-    const { user, error } = await supabase.auth.signIn({ email, password });
-    if (error) throw error;
-    return user;
-};
-
-export const oAuthLogin = async (provider) => {
+export async function loginComOAuth(provider) {
     const { user, session, error } = await supabase.auth.signIn({ provider });
-    if (error) throw error;
-    return { user, session };
-};
+    return { user, session, error };
+}
+
+export async function getUsuarioAtual() {
+    const { data: { user }, error } = await supabase.auth.getUser();
+    return { user, error };
+}
+
+export async function logout() {
+    const { error } = await supabase.auth.signOut();
+    return { error };
+}
+
+export function onAuthStateChange(callback) {
+    supabase.auth.onAuthStateChange((event, session) => {
+        callback(event, session);
+    });
+}
