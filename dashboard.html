@@ -304,6 +304,9 @@ async function fazerLogin() {
 
     if (data?.session || data?.user) {
       window.location.href = 'hub.html';
+      
+      await verificarAuth();
+      main
       return;
     }
 
@@ -388,6 +391,33 @@ function desenharGraficoGanhos(vendas) {
     const d = new Date();
     d.setMonth(d.getMonth() - (5 - i));
     return d;
+});
+
+  const pontos = meses.map((mes) => {
+    const totalMes = vendas
+      .filter((v) => {
+        const data = new Date(v.created_at);
+        return data.getMonth() === mes.getMonth() && data.getFullYear() === mes.getFullYear();
+      })
+      .reduce((acc, v) => acc + Number(v.valor || 0), 0);
+    return totalMes;
+  });
+
+  const max = Math.max(...pontos, 1);
+  const padding = 28;
+  const stepX = (width - padding * 2) / (pontos.length - 1 || 1);
+
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = '#4f46e5';
+  ctx.beginPath();
+
+  pontos.forEach((valor, index) => {
+    const x = padding + stepX * index;
+    const y = height - padding - ((height - padding * 2) * (valor / max));
+    if (index === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  });
+
   });
 
   const pontos = meses.map((mes) => {
@@ -415,6 +445,7 @@ function desenharGraficoGanhos(vendas) {
     else ctx.lineTo(x, y);
   });
 
+     main
   ctx.stroke();
 
   ctx.fillStyle = '#4f46e5';
