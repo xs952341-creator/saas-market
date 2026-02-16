@@ -1,23 +1,24 @@
-// Auth functions
+import { createClient } from '@supabase/supabase-js';
 
-const loginComEmail = (email, password) => {
-    // Function to log in using email and password
-    // TODO: Implement login logic
+const SUPABASE_URL = 'your_supabase_url';
+const SUPABASE_ANON_KEY = 'your_supabase_anon_key';
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+export const register = async (email, password) => {
+    const { user, error } = await supabase.auth.signUp({ email, password });
+    if (error) throw error;
+    return user;
 };
 
-const cadastrarComEmail = (email, password) => {
-    // Function to register a new user with email and password
-    // TODO: Implement registration logic
+export const login = async (email, password) => {
+    const { user, error } = await supabase.auth.signIn({ email, password });
+    if (error) throw error;
+    return user;
 };
 
-const loginComOAuth = (provider) => {
-    // Function to log in using OAuth
-    // TODO: Implement OAuth login logic
+export const oAuthLogin = async (provider) => {
+    const { user, session, error } = await supabase.auth.signIn({ provider });
+    if (error) throw error;
+    return { user, session };
 };
-
-const getUsuarioAtual = () => {
-    // Function to get the current logged-in user
-    // TODO: Implement logic to retrieve current user
-};
-
-export { loginComEmail, cadastrarComEmail, loginComOAuth, getUsuarioAtual };
